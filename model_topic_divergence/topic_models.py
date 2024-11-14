@@ -104,7 +104,13 @@ class TopicModelSelector:
     """
     list_of_H = []
     vals = []
-    for n_clusters in range(8, max(8, min(64, len(self.df) // 64)) + 1, 4):
+
+    ###
+    # to:do - make this smarter
+    search_range = range(8, max(8, min(32, len(self.df) // 128)) + 1, 4)
+    ###
+
+    for n_clusters in search_range:
       btm = BertTopicModel(cluster_model_kwargs = {'n_clusters' : n_clusters})
       topics, probs = btm.fit_transform(self.df[self.text_col])
       # calculate the entropy for agreement between the two labels per topic
