@@ -128,7 +128,7 @@ class TopicModelSelector:
       label_2_H = self.calculate_topic_H(topics, self.df[self.label_2_col])
       
       H = (self.paired_lagrange * paired_H) + ((1 - self.paired_lagrange) * np.mean([label_1_H, label_2_H]))
-      print('\t\t', paired_H, label_1_H, label_2_H, H)
+      print('\t\t', n_clusters, paired_H, label_1_H, label_2_H, H)
       list_of_H.append((H, n_clusters, btm))
 
     best_result = sorted(list_of_H)[0]
@@ -171,4 +171,8 @@ class TopicModelSelector:
     topic2p = dict((topic, c / sum(topic_counts.values())) for topic, c in topic_counts.items())
     weighted_H = [topic2entropy[topic] * topic2p[topic] for topic in topic2entropy.keys()]
     mean_H = np.mean(weighted_H)
+    
+    # to-do:
+    # totally rewrite. As now, there's a very strong tendancy for larger numbers of cluster to have
+    # naturally lower values. How to fix that?
     return mean_H
