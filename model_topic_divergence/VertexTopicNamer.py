@@ -30,7 +30,7 @@ class VertexTopicNamer:
     """
     
     def gen_topic_label_name(self, top_kws : list[str]) -> str:
-            """
+        """
     Generate a descriptive label name for a topic based on its top keywords.
 
     This function takes a list of top keywords (`top_kws`) for a topic and generates 
