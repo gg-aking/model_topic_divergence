@@ -2,8 +2,8 @@ from collections import defaultdict, Counter
 import pandas as pd
 import numpy as np
 
-from VertexTopicNamer import VertexTopicNamer
-from topic_models import BertTopicModel, TopicModelSelector
+from model_topic_divergence.VertexTopicNamer import VertexTopicNamer
+from model_topic_divergence.topic_models import BertTopicModel, TopicModelSelector
 
 class ModelTopicDivergence:
 
