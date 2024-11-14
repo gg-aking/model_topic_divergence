@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+gcloud
+google-cloud-aiplatform
+protobuf
+grpcio
+google-auth
+bertopic
