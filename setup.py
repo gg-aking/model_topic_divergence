@@ -1,5 +1,7 @@
-import pip
 from setuptools import setup, find_packages
+
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
 
 setup(
     name="model_topic_divergence",
@@ -9,6 +11,6 @@ setup(
     author_email="aking@gumgum.com",
     url="https://github.com/gg-aking/model_topic_divergence",
     packages=find_packages(),  
-    install_requires=pip.req.parse_requirements('requirements.txt'),
+    install_requires=requirements,
     python_requires=">=3.6",
 )
