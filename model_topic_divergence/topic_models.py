@@ -139,7 +139,7 @@ class TopicModelSelector:
   def calculate_topic_H(self, topics : List, 
                         labels_1 : List[bool], 
                         labels_2 : Optional[List[bool]] = None,
-                        log_topic_counts : bool = True):
+                        ):
     """
     Calculate the weighted mean entropy across topics based on label distributions.
 
@@ -158,10 +158,7 @@ class TopicModelSelector:
         float: The weighted mean entropy across all topics, where the weight of each topic's 
                entropy is proportional to its frequency in the `topics` list.
     """
-    topic_counts = Counter(topics)
-    if log_topic_counts:
-      log_topic_counts = dict((topic, np.log2(c)) for topic, c in topic_counts.items())
-      
+    topic_counts = Counter(topics)  
     topic2label_difs = defaultdict(Counter)
     if labels_2 is not None:
       for i, (topic, label_1, label_2) in enumerate(zip(topics, labels_1, labels_2)):
