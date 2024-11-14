@@ -103,14 +103,14 @@ class TopicModelSelector:
                                     that minimizes the combined entropy score.
     """
     list_of_H = []
-    vals = []
-
+    
     ###
     # to:do - make this smarter
     search_range = range(8, max(8, min(32, len(self.df) // 128)) + 1, 4)
     ###
 
     for n_clusters in search_range:
+      print('\t', n_clusters)
       btm = BertTopicModel(cluster_model_kwargs = {'n_clusters' : n_clusters})
       topics, probs = btm.fit_transform(self.df[self.text_col])
       # calculate the entropy for agreement between the two labels per topic
@@ -122,11 +122,14 @@ class TopicModelSelector:
       # entropy will be close to 0 if each topic is made up of only one kind of pair of labels, i.e., True or False
       label_1_H = self.calculate_topic_H(topics, self.df[self.label_1_col])
       label_2_H = self.calculate_topic_H(topics, self.df[self.label_2_col])
-      vals.append((n_clusters, paired_H, label_1_H, label_2_H))
+      
       H = (self.paired_lagrange * paired_H) + ((1 - self.paired_lagrange) * np.mean([label_1_H, label_2_H]))
+      print('\t\t', paired_H, label_1_H, label_2_H, H)
       list_of_H.append((H, n_clusters, btm))
 
-    btm, n_clusters = sorted(list_of_H)[0][-1], sorted(list_of_H)[0][1]
+    best_result = sorted(list_of_H)[0]
+    H, btm, n_clusters = best_result
+    print(H, n_clusters)
     return btm, n_clusters
   
   def calculate_topic_H(self, topics : List, 
