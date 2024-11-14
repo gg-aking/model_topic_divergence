@@ -6,5 +6,5 @@ google-cloud-aiplatform
 protobuf
 grpcio
 google-auth
-bertopic
-openai
+bertopic==0.16.3
+openai==1.44.1
