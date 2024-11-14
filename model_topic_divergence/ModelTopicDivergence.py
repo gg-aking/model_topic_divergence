@@ -41,10 +41,12 @@ class ModelTopicDivergence:
     self.df['topic'] = self.topics
     self.grouped_df = self.df[['topic', 
                                self.label_1_col, self.label_2_col]].groupby('topic').agg(lambda l: Counter(l)[True]).reset_index()
-    self.grouped_df['topic_count'] = self.grouped_df['topic'].apply(self.topic_counter.get)
+    self.grouped_df['total_topic_count'] = self.grouped_df['topic'].apply(self.topic_counter.get)
     self.grouped_df['ratio'] = self.grouped_df.apply(lambda row : row[self.label_1_col] / max(1, row[self.label_2_col]), 
                                                     axis = 1)
     self.grouped_df = self.grouped_df.sort_values('ratio').reset_index(drop = True)
+    self.grouped_df = self.grouped_df.rename(columns  = {self.label_1_col : f'{self.label_1_col}_count',
+                                                        self.label_2_col : f'{self.label_2_col}_count'})
     self.topic2name = {}
     
     # use LLM to generate label names. Don't always do to avoid unneeded LLM calls
