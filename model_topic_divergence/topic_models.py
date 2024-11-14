@@ -106,7 +106,11 @@ class TopicModelSelector:
     
     ###
     # to:do - make this smarter
-    search_range = range(8, max(8, min(32, len(self.df) // 128)) + 1, 4)
+
+    max_clusters = max(8, min(32, len(self.df) // 128))
+    min_clusters = max(8, max_clusters // 2)
+    step_size = 4
+    search_range = range(min_clusters, max_clusters + 1, step_size)
     ###
 
     for n_clusters in search_range:
@@ -128,13 +132,14 @@ class TopicModelSelector:
       list_of_H.append((H, n_clusters, btm))
 
     best_result = sorted(list_of_H)[0]
-    H, btm, n_clusters = best_result
+    H, n_clusters, btm  = best_result
     print(H, n_clusters)
     return btm, n_clusters
   
   def calculate_topic_H(self, topics : List, 
                         labels_1 : List[bool], 
-                        labels_2 : Optional[List[bool]] = None):
+                        labels_2 : Optional[List[bool]] = None,
+                        log_topic_counts : bool = True):
     """
     Calculate the weighted mean entropy across topics based on label distributions.
 
@@ -154,6 +159,9 @@ class TopicModelSelector:
                entropy is proportional to its frequency in the `topics` list.
     """
     topic_counts = Counter(topics)
+    if log_topic_counts:
+      log_topic_counts = dict((topic, np.log2(c)) for topic, c in topic_counts.items())
+      
     topic2label_difs = defaultdict(Counter)
     if labels_2 is not None:
       for i, (topic, label_1, label_2) in enumerate(zip(topics, labels_1, labels_2)):
