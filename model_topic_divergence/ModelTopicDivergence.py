@@ -63,7 +63,7 @@ class ModelTopicDivergence:
     """
     topic_sub_df = self.df[self.df['topic'] == topic_id].drop_duplicates(subset = [self.text_col]).reset_index(drop = True).copy()
     if shortest_first:
-      topic_sub_df = topic_sub_df.sort_values(self.text_col, key=lambda s: s.str.len()).reset_index(drop = True)
+      topic_sub_df = topic_sub_df.sort_values(self.text_col, key=lambda s : s.str.len()).reset_index(drop = True)
       topic_sub_df = topic_sub_df.head(len(topic_sub_df) // 2)
     
     n_examples = min(n_examples, len(topic_sub_df))
