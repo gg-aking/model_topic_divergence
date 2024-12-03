@@ -2,16 +2,17 @@ import re
 
 import vertexai
 from vertexai.language_models import TextGenerationModel
+from vertexai.generative_models import GenerativeModel, Part, SafetySetting
 
 class VertexTopicNamer:
 
     def __init__(self, 
                  vertex_project : str,
-                 vertex_model_name : str = "text-bison@002",
+                 vertex_model_name : str = "gemini-1.5-flash-002",
                  vertex_location : str = 'us-central1',
                  vertex_parameters : dict = {
                         "candidate_count": 1,
-                        "max_output_tokens": 16,
+                        "max_output_tokens": 64,
                         "temperature": 0,
                         "top_p": 1,
                         "top_k": 1
@@ -22,8 +23,27 @@ class VertexTopicNamer:
         self.vertex_location = vertex_location
         self.vertex_parameters = vertex_parameters
 
+        self.safety_settings = [
+            SafetySetting(
+                    category=SafetySetting.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                    threshold=SafetySetting.HarmBlockThreshold.OFF
+            ),
+            SafetySetting(
+                category=SafetySetting.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold=SafetySetting.HarmBlockThreshold.OFF
+            ),
+            SafetySetting(
+                category=SafetySetting.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold=SafetySetting.HarmBlockThreshold.OFF
+            ),
+            SafetySetting(
+                category=SafetySetting.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold=SafetySetting.HarmBlockThreshold.OFF
+            ),
+        ]
+
         vertexai.init(project=self.vertex_project, location=self.vertex_location)
-        self.vertex_model = TextGenerationModel.from_pretrained(self.vertex_model_name)
+        self.vertex_model = GenerativeModel(self.vertex_model_name)
 
         self.instruction = """The following are top keywords from a topic in a topic modeling task. Please give a natural-sounding representative English name for this topic, given these keywords. Do not respond with anything beside the label name and the label should only include English words.
     Keywords:
@@ -45,11 +65,16 @@ class VertexTopicNamer:
         str: A descriptive label generated for the topic, refined by `clean_response_str`.
         """
         kws_as_str = "\n".join([f' - {kw}' for kw in top_kws])
-    
-        response = self.vertex_model.predict(
-            self.instruction + '\n' + kws_as_str,
-            **self.vertex_parameters
+        
+        prompt = self.instruction + '\n' + kws_as_str
+        
+        response = self.vertex_model.generate_content(
+                [prompt],
+                generation_config=self.vertex_parameters,
+                safety_settings=self.safety_settings,
+                stream=False,
         )
+
         response_str = response.text
         response_str = self.clean_response_str(response_str)
         return response_str
