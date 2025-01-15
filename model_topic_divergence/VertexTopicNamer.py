@@ -70,7 +70,6 @@ class VertexTopicNamer:
         kws_as_str = "\n".join([f' - {kw}' for kw in top_kws])
         
         response = self.send_prompt(kws_as_str, prepend_instruction = True)
-
         response_str = response.text
         response_str = self.clean_response_str(response_str)
         return response_str
