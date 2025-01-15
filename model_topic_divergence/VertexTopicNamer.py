@@ -1,5 +1,7 @@
 import re
 
+from typing import Optional
+
 import vertexai
 from vertexai.language_models import TextGenerationModel
 from vertexai.generative_models import GenerativeModel, Part, SafetySetting
@@ -17,6 +19,9 @@ class VertexTopicNamer:
                         "top_p": 1,
                         "top_k": 1
                 },
+                instruction : str = """The following are top keywords from a topic in a topic modeling task. Please give a natural-sounding representative English name for this topic, given these keywords. Do not respond with anything beside the label name and the label should only include English words.
+    Keywords:
+    """,
     ):
         self.vertex_project = vertex_project
         self.vertex_model_name = vertex_model_name
@@ -45,9 +50,7 @@ class VertexTopicNamer:
         vertexai.init(project=self.vertex_project, location=self.vertex_location)
         self.vertex_model = GenerativeModel(self.vertex_model_name)
 
-        self.instruction = """The following are top keywords from a topic in a topic modeling task. Please give a natural-sounding representative English name for this topic, given these keywords. Do not respond with anything beside the label name and the label should only include English words.
-    Keywords:
-    """
+        self.instruction = instruction
     
     def gen_topic_label_name(self, top_kws : list[str]) -> str:
         """
@@ -66,7 +69,21 @@ class VertexTopicNamer:
         """
         kws_as_str = "\n".join([f' - {kw}' for kw in top_kws])
         
-        prompt = self.instruction + '\n' + kws_as_str
+        response = self.send_prompt(kws_as_str, prepend_instruction = True)
+        response_str = response.text
+        response_str = self.clean_response_str(response_str)
+        return response_str
+    
+    def send_prompt(self, text : str, 
+                            prepend_instruction : bool = True,
+                            custom_instruction : Optional[str] = None):
+        if prepend_instruction:
+            if isinstance(custom_instruction, str):
+                prompt = custom_instruction + '\n' + text
+            else:
+                prompt = self.instruction + '\n' + text
+        else:
+            prompt = text
         
         response = self.vertex_model.generate_content(
                 [prompt],
@@ -74,11 +91,8 @@ class VertexTopicNamer:
                 safety_settings=self.safety_settings,
                 stream=False,
         )
+        return response
 
-        response_str = response.text
-        response_str = self.clean_response_str(response_str)
-        return response_str
-    
     def clean_response_str(self, response_str : str) -> str:
         """
             Clean the label name response from the LLM. 
