@@ -1,5 +1,7 @@
 import re
 
+from typing import Optional
+
 import vertexai
 from vertexai.language_models import TextGenerationModel
 from vertexai.generative_models import GenerativeModel, Part, SafetySetting
@@ -68,14 +70,19 @@ class VertexTopicNamer:
         kws_as_str = "\n".join([f' - {kw}' for kw in top_kws])
         
         response = self._send_prompt(kws_as_str, prepend_instruction = True)
-        
+
         response_str = response.text
         response_str = self.clean_response_str(response_str)
         return response_str
     
-    def _send_prompt(self, text : str, prepend_instruction : bool = True):
+    def _send_prompt(self, text : str, 
+                            prepend_instruction : bool = True,
+                            custom_instruction : Optional[str] = None):
         if prepend_instruction:
-            prompt = self.instruction + '\n' + text
+            if isinstance(custom_instruction, str):
+                prompt = custom_instruction + '\n' + text
+            else:
+                prompt = self.instruction + '\n' + text
         else:
             prompt = text
         
