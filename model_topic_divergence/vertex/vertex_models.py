@@ -74,6 +74,8 @@ class GeneralVertexModel:
 class VertexTopicNamer(GeneralVertexModel):
 
     def __init__(self, vertex_project : str, **kwargs):
+        
+        kwargs['vertex_project'] = vertex_project
         if 'instruction' not in kwargs:
             kwargs['instruction'] = """The following are top keywords from a topic in a topic modeling task. Please give a natural-sounding representative English name for this topic, given these keywords. Do not respond with anything beside the label name and the label should only include English words.
     Keywords:
@@ -86,7 +88,7 @@ class VertexTopicNamer(GeneralVertexModel):
                         "top_p": 1,
                         "top_k": 1
                 }
-        super().__init__(self, vertex_project = vertex_project, **kwargs)
+        super().__init__(self, **kwargs)
 
     def gen_topic_label_name(self, top_kws : list[str]) -> str:
         """
@@ -125,6 +127,7 @@ class VertexTopicDescriber(GeneralVertexModel):
 
     def __init__(self, vertex_project : str, **kwargs):
 
+        kwargs['vertex_project'] = vertex_project
         if 'instruction' not in kwargs:
             kwargs['instruction'] = """The following are the names of topics from an NLP topic modeling task. Each topic name may be too specific to generally describe content.
 Your task is to generate a topic name that is more general and broadly applicable to the content and to provide a description of content that falls in that topic.
@@ -145,6 +148,7 @@ Topics:
                         "top_p": 1,
                         "top_k": 1
                 }
+        super().__init__(self, **kwargs)
 
     def rename_and_describe_topics(self, raw_labels : list[str]) -> list[tuple[str, str]]:
         """
