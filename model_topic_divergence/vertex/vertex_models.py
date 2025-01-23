@@ -6,9 +6,6 @@ import vertexai
 from vertexai.language_models import TextGenerationModel
 from vertexai.generative_models import GenerativeModel, Part, SafetySetting
 
-instruction : str = 
-    vertex_parameters : dict = 
-
 class GeneralVertexModel:
 
     def __init__(self, 
