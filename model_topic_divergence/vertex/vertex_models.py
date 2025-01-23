@@ -88,7 +88,7 @@ class VertexTopicNamer(GeneralVertexModel):
                         "top_p": 1,
                         "top_k": 1
                 }
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def gen_topic_label_name(self, top_kws : list[str]) -> str:
         """
@@ -148,7 +148,7 @@ Topics:
                         "top_p": 1,
                         "top_k": 1
                 }
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def rename_and_describe_topics(self, raw_labels : list[str]) -> list[tuple[str, str]]:
         """
