@@ -162,7 +162,7 @@ Topics:
         """
 
         labels_to_rename = ' - ' + '\n - '.join(raw_labels)
-        response = vtn.send_prompt(text = labels_to_rename)
+        response = self.send_prompt(text = labels_to_rename)
         response_text = response.text
         new_labels = self.parse_and_deduplicate_labels(response_text)
         return new_labels
