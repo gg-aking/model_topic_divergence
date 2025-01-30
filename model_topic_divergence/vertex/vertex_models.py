@@ -131,14 +131,21 @@ class VertexTopicDescriber(GeneralVertexModel):
         if 'instruction' not in kwargs:
             kwargs['instruction'] = """The following are the names of topics from an NLP topic modeling task. Each topic name may be too specific to generally describe content.
 Your task is to generate a topic name that is more general and broadly applicable to the content and to provide a description of content that falls in that topic.
-Example:
- - Topic: "Yahoo Browser Compatibility"
- - Output: "Browser Issues - This topic concerns general issues related to web browsers and ensuring a visitor of a webpage is able to view all content."
+Return the output in a JSON formatted like this: {"topic_name" : ...., "description" : ....}
+Examples:
+ - Input: "Yahoo Browser Compatibility"
+ - Output: {
+            "topic_name" : "Browser Issues",
+            "description" : "Problems users encounter while using web browsers, including slow performance, compatibility errors, or security vulnerabilities, including content that categorizes text that discusses any difficulties related to browser functionality or user experience while browsing the internet.",
+            }
 
- - Topic: "Local Government Finance"
- - Output: "Local Issues - This topic concerns general issues related to a specific location, including local government issues."
+ - Input: "Local Government Finance"
+ - Output: {
+            "topic_name" : "Local Issues",
+            "description" : "Encompasses content related to the governance and administrative functions of local authorities, as well as challenges or concerns specific to a local community, including content that addresses municipal policies, public services, community problems, or local governance matters.",
+            }
 
-Topics:
+Input:
 """
         if 'vertex_parameters' not in kwargs:
             kwargs['vertex_parameters'] =  {
