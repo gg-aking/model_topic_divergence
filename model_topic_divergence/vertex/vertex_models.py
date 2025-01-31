@@ -1,4 +1,4 @@
-import re
+import re, json
 
 from typing import Optional
 
@@ -145,8 +145,6 @@ Examples:
             "topic_name" : "Local Issues",
             "description" : "Encompasses content related to the governance and administrative functions of local authorities, as well as challenges or concerns specific to a local community, including content that addresses municipal policies, public services, community problems, or local governance matters.",
             }
-
-Input:
 """
         if 'vertex_parameters' not in kwargs:
             kwargs['vertex_parameters'] =  {
@@ -158,7 +156,7 @@ Input:
                 }
         super().__init__(**kwargs)
 
-    def rename_and_describe_topics(self, raw_labels : list[str]) -> list[tuple[str, str]]:
+    def rename_and_describe_topics(self, raw_topic_name : str) -> dict[str, str]:
         """
             Take a list of rough topic names and product a new list of more general topics,
             with short descriptions for each of them.
@@ -169,18 +167,18 @@ Input:
             tuple[str, str]: A list of pairs of new topic names and label descriptions
         """
 
-        labels_to_rename = ' - ' + '\n - '.join(raw_labels)
-        response = self.send_prompt(text = labels_to_rename)
-        response_text = response.text
-        new_labels = self.parse_and_deduplicate_labels(response_text)
-        return new_labels
-        
-    def parse_and_deduplicate_labels(self, response_text : str) -> list[tuple[str, str]]:
-        new_labels = re.findall(r'\*{0,2}Output:\*{0,2} (.*?) - (.*?)\n', response_text)
+        prompt = self.instruction
+        prompt += f""" - Input: "{raw_topic_name}"
+- Output: """
 
-        new_labels_ = []
-        for i, (name, description) in enumerate(new_labels):
-            if len(new_labels_) == 0 or name not in [name for name, _ in new_labels_]:
-                new_labels_.append((name, description))
-        new_labels = new_labels_.copy()
-        return new_labels
+        response = self.send_prompt(text = prompt, prepend_instruction = False)
+        response_text = response.text
+        j = self.parse_and_deduplicate_labels(response_text)
+        return j
+        
+    def parse_and_deduplicate_labels(self, response_text : str) -> dict[str, str]:
+        response_text = response_text.replace('\n', ' ')
+        response_text = re.sub(r'^.*\{', '{', response_text)
+        response_text = re.sub(r'\}.*$', '}', response_text)
+        j = json.loads(response_text)
+        return j
