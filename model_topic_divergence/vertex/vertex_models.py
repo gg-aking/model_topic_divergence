@@ -156,7 +156,7 @@ Examples:
                 }
         super().__init__(**kwargs)
 
-    def rename_and_describe_topics(self, raw_topic_name : str) -> dict[str, str]:
+    def rename_and_describe_topic(self, raw_topic_name : str) -> dict[str, str]:
         """
             Take a list of rough topic names and product a new list of more general topics,
             with short descriptions for each of them.
@@ -176,7 +176,7 @@ Examples:
         j = self.parse_and_deduplicate_labels(response_text)
         return j
         
-    def parse_and_deduplicate_labels(self, response_text : str) -> dict[str, str]:
+    def parse_and_deduplicate_label(self, response_text : str) -> dict[str, str]:
         response_text = response_text.replace('\n', ' ')
         response_text = re.sub(r'^.*\{', '{', response_text)
         response_text = re.sub(r'\}.*$', '}', response_text)
