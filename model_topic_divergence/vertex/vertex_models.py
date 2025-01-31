@@ -129,7 +129,8 @@ class VertexTopicDescriber(GeneralVertexModel):
 
         kwargs['vertex_project'] = vertex_project
         if 'instruction' not in kwargs:
-            kwargs['instruction'] = """The following are the names of topics from an NLP topic modeling task. Each topic name may be too specific to generally describe content.
+            kwargs['instruction'] = """You are a data annotation expert, designing a taxonomy of topics for webcontent. 
+            You will be given the name of a topic from an NLP topic modeling task, though the name may be too specific to generally describe content.
 Your task is to generate a topic name that is more general and broadly applicable to the content and to provide a description of content that falls in that topic.
 Return the output in a JSON formatted like this: {"topic_name" : ...., "description" : ....}
 Examples:
@@ -150,7 +151,7 @@ Input:
         if 'vertex_parameters' not in kwargs:
             kwargs['vertex_parameters'] =  {
                         "candidate_count": 1,
-                        "max_output_tokens": 1024,
+                        "max_output_tokens": 256,
                         "temperature": 0,
                         "top_p": 1,
                         "top_k": 1
