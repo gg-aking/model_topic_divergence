@@ -173,7 +173,7 @@ Examples:
 
         response = self.send_prompt(text = prompt, prepend_instruction = False)
         response_text = response.text
-        j = self.parse_and_deduplicate_labels(response_text)
+        j = self.parse_and_deduplicate_label(response_text)
         return j
         
     def parse_and_deduplicate_label(self, response_text : str) -> dict[str, str]:
