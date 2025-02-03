@@ -110,7 +110,8 @@ class VertexTopicNamer(GeneralVertexModel):
         kws_as_str = "Keywords:\n" + "\n".join([f' - {kw}' for kw in top_kws])
         
         if isinstance(parent_topic, str):
-            instruction = self.instruction + "\n" + """This topic is a child of a larger topic, "{parent_topic}". Please keep that in mind when naming this topic based on the keywords. """
+            instruction = self.instruction.replace("The following are top keywords from a topic in a topic modeling task. ",
+                                                f"The following are top keywords from a topic in a topic modeling task, **which is a child of a larger topic, "{parent_topic}".** """
 
             response = self.send_prompt(kws_as_str, 
                                         prepend_instruction = False, 
