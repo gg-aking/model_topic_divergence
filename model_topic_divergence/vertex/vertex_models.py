@@ -80,7 +80,7 @@ class VertexTopicNamer(GeneralVertexModel):
             kwargs['instruction'] = """You are an expert is describing the content of webpages.
             The following are top keywords from a topic in a topic modeling task. 
             Please give a natural-sounding, representative English name for this topic, given these keywords. 
-            Do not respond with anything beside the label name and the label should only include English words.
+            Respond with **only** the topic name and the label should only include English words.
     """
         if 'vertex_parameters' not in kwargs:
             kwargs['vertex_parameters'] =  {
@@ -112,6 +112,7 @@ class VertexTopicNamer(GeneralVertexModel):
         if isinstance(parent_topic, str):
             instruction = self.instruction.replace("The following are top keywords from a topic in a topic modeling task. ", 
                                     f'The following are top keywords from a topic in a topic modeling task, **which is a child of a larger topic, "{parent_topic}".** ')
+            instruction = instruction.replace("**only** the topic name", "**only** the name of the child topic, as indicated by the keywords")
             response = self.send_prompt(kws_as_str, 
                                         prepend_instruction = False, 
                                         custom_instruction = instruction)
