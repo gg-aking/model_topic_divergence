@@ -111,7 +111,7 @@ class VertexTopicNamer(GeneralVertexModel):
         
         if isinstance(parent_topic, str):
             instruction = self.instruction.replace("The following are top keywords from a topic in a topic modeling task. ",
-                                                f"The following are top keywords from a topic in a topic modeling task, **which is a child of a larger topic, "{parent_topic}".** """
+                                                f"The following are top keywords from a topic in a topic modeling task, **which is a child of a larger topic, "{parent_topic}".** """)
 
             response = self.send_prompt(kws_as_str, 
                                         prepend_instruction = False, 
