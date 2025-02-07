@@ -77,8 +77,10 @@ class VertexTopicNamer(GeneralVertexModel):
         
         kwargs['vertex_project'] = vertex_project
         if 'instruction' not in kwargs:
-            kwargs['instruction'] = """The following are top keywords from a topic in a topic modeling task. Please give a natural-sounding representative English name for this topic, given these keywords. Do not respond with anything beside the label name and the label should only include English words.
-    Keywords:
+            kwargs['instruction'] = """You are an expert is describing the content of webpages.
+            The following are top keywords from a topic in a topic modeling task. 
+            Please give a natural-sounding, representative English name for this topic, given these keywords. 
+            Respond with **only** the topic name and the label should only include English words.
     """
         if 'vertex_parameters' not in kwargs:
             kwargs['vertex_parameters'] =  {
@@ -90,7 +92,7 @@ class VertexTopicNamer(GeneralVertexModel):
                 }
         super().__init__(**kwargs)
 
-    def gen_topic_label_name(self, top_kws : list[str]) -> str:
+    def gen_topic_label_name(self, top_kws : list[str], parent_topic : Optional[str] = None) -> str:
         """
     Generate a descriptive label name for a topic based on its top keywords.
 
@@ -105,9 +107,17 @@ class VertexTopicNamer(GeneralVertexModel):
     Returns:
         str: A descriptive label generated for the topic, refined by `clean_response_str`.
         """
-        kws_as_str = "\n".join([f' - {kw}' for kw in top_kws])
+        kws_as_str = "Keywords:\n" + "\n".join([f' - {kw}' for kw in top_kws])
         
-        response = self.send_prompt(kws_as_str, prepend_instruction = True)
+        if isinstance(parent_topic, str):
+            instruction = self.instruction.replace("The following are top keywords from a topic in a topic modeling task. ", 
+                                    f'The following are top keywords from a topic in a topic modeling task, **which is a child of a larger topic, "{parent_topic}".** ')
+            instruction = instruction.replace("**only** the topic name", "**only** the name of the child topic, as indicated by the keywords")
+            response = self.send_prompt(kws_as_str, 
+                                        prepend_instruction = True, 
+                                        custom_instruction = instruction)
+        else:
+            response = self.send_prompt(kws_as_str, prepend_instruction = True)
 
         response_str = response.text
         response_str = self.clean_response_str(response_str)
